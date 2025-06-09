@@ -44,16 +44,20 @@ const Home = () => {
       const res = await axios.get('http://localhost:5000/posts', { headers });
 
       const postsWithLikes = await Promise.all(
-        res.data.posts.map(async (post) => {
-          try {
-            const likeRes = await axios.get(`http://localhost:5000/posts/${post.post_id}/likes`, { headers });
-            // Assume liked status is false on initial load. You can update if you have an API for user likes.
-            return { ...post, likesCount: likeRes.data.likes, liked: false };
-          } catch {
-            return { ...post, likesCount: 0, liked: false };
-          }
-        })
-      );
+  res.data.posts.map(async (post) => {
+    try {
+      const likeRes = await axios.get(`http://localhost:5000/posts/${post.post_id}/likes`, { headers });
+      return {
+        ...post,
+        likesCount: likeRes.data.likes,
+        liked: likeRes.data.liked, //for dynamic like checking
+      };
+    } catch {
+      return { ...post, likesCount: 0, liked: false };
+    }
+  })
+);
+
 
       setPosts(postsWithLikes);
     } catch (err) {

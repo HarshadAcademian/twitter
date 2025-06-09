@@ -30,14 +30,24 @@ exports.toggleLike = async (req, res) => {
 };
 
 exports.getLikes = async (req, res) => {
+  const userId = req.user.userId;
   const postId = parseInt(req.params.postId);
 
   try {
-    const count = await pool.query(
+    const countResult = await pool.query(
       'SELECT COUNT(*) FROM POST_LIKE WHERE LIKE_POST_ID = $1',
       [postId]
     );
-    res.json({ likes: parseInt(count.rows[0].count, 10) });
+
+    const userLikedResult = await pool.query(
+      'SELECT 1 FROM POST_LIKE WHERE LIKE_USER_ID = $1 AND LIKE_POST_ID = $2',
+      [userId, postId]
+    );
+
+    const likes = parseInt(countResult.rows[0].count, 10);
+    const liked = userLikedResult.rows.length > 0;
+
+    res.json({ likes, liked });
   } catch (err) {
     console.error('Get likes error:', err);
     res.status(500).json({ error: 'Server error fetching likes' });

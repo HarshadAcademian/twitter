@@ -1,4 +1,3 @@
-// src/components/Like.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -7,6 +6,11 @@ const Like = ({ postId, initialLikesCount, initialLiked, token }) => {
   const [liked, setLiked] = useState(initialLiked || false);
 
   const headers = { Authorization: `Bearer ${token}` };
+
+  useEffect(() => {
+    setLikesCount(initialLikesCount || 0);
+    setLiked(initialLiked || false);
+  }, [initialLikesCount, initialLiked]);
 
   const toggleLike = async () => {
     try {
@@ -17,10 +21,10 @@ const Like = ({ postId, initialLikesCount, initialLiked, token }) => {
       );
 
       if (response.data.liked) {
-        setLikesCount((count) => count + 1);
+        setLikesCount((prev) => prev + 1);
         setLiked(true);
       } else {
-        setLikesCount((count) => Math.max(0, count - 1));
+        setLikesCount((prev) => Math.max(0, prev - 1));
         setLiked(false);
       }
     } catch (error) {
@@ -29,15 +33,15 @@ const Like = ({ postId, initialLikesCount, initialLiked, token }) => {
   };
 
   return (
-    <>
+    <div className="flex items-center gap-2">
       <button
         onClick={toggleLike}
-        className="text-pink-500 hover:text-pink-600 font-medium"
+        className={`font-medium ${liked ? 'text-pink-500' : 'text-gray-500'} hover:text-pink-600`}
       >
         {liked ? '❤️' : '🤍'} Like
       </button>
       <span className="text-sm">{likesCount} Likes</span>
-    </>
+    </div>
   );
 };
 

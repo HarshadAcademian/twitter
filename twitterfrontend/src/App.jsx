@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // ⬅ Add Navigate
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -8,6 +8,9 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* 🔁 Redirect root (/) to /signup */}
+        <Route path="/" element={<Navigate to="/signup" replace />} />
+
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route

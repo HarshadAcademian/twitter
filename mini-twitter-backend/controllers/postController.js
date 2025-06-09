@@ -1,8 +1,14 @@
-// controllers/postController.js
 const pool = require('../models/db');
+const { validationResult } = require('express-validator');
 
 // Create a post
 exports.createPost = async (req, res) => {
+  // Validate inputs
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { content } = req.body;
   const userId = req.user.userId;
 
@@ -41,9 +47,14 @@ exports.getPosts = async (req, res) => {
   }
 };
 
-
-// controllers/postController.js
+// Update a post
 exports.updatePost = async (req, res) => {
+  // Validate inputs
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
   const { id } = req.params;
   const { content } = req.body;
   const userId = req.user.userId;
@@ -68,10 +79,7 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-
-
-// controllers/postController.js
-// controllers/postController.js
+// Delete a post
 exports.deletePost = async (req, res) => {
   const { id } = req.params;
   const userId = req.user.userId;
@@ -95,4 +103,3 @@ exports.deletePost = async (req, res) => {
     res.status(500).json({ error: 'Server error deleting post' });
   }
 };
-

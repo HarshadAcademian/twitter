@@ -234,7 +234,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="mt-4 border-t pt-4 bg-gray-50 rounded-lg">
+            <div className="mt-4 pt-4 bg-gray-50 rounded-lg">
               <CommentSection postId={post.post_id} token={token} />
             </div>
           </div>

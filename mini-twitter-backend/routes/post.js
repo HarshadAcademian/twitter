@@ -6,10 +6,11 @@ const verifyToken = require('../middleware/verifyToken');
 const postController = require('../controllers/postController');
 const commentController = require('../controllers/commentController');
 const likeController = require('../controllers/likeController');
+const sanitizeBody = require('../middleware/sanitizeBody');
 
-// @route   POST /posts
-// @desc    Create a new post
-// @access  Private
+// --- POST ROUTES ---
+
+// Create a post
 router.post(
   '/',
   verifyToken,
@@ -23,9 +24,7 @@ router.post(
   postController.createPost
 );
 
-// @route   GET /posts
-// @desc    Get all posts
-// @access  Private
+// Get all posts
 router.get('/', verifyToken, postController.getPosts);
 
 // Update a post
@@ -45,14 +44,48 @@ router.put(
 // Delete a post
 router.delete('/:id', verifyToken, postController.deletePost);
 
-// Comment routes
+// --- COMMENT ROUTES ---
+
+// Get comments for a post
 router.get('/:postId/comments', verifyToken, commentController.getComments);
-router.post('/:postId/comments', verifyToken, commentController.addComment);
-router.put('/comments/:id', verifyToken, commentController.updateComment);
+
+// Add a comment
+router.post(
+  '/:postId/comments',
+  verifyToken,
+  [
+    body('content')
+      .trim()
+      .notEmpty()
+      .withMessage('Comment content cannot be empty'),
+    sanitizeBody(['content'])
+  ],
+  commentController.addComment
+);
+
+// Update a comment
+router.put(
+  '/comments/:id',
+  verifyToken,
+  [
+    body('content')
+      .trim()
+      .notEmpty()
+      .withMessage('Updated comment content cannot be empty'),
+    sanitizeBody(['content'])
+  ],
+  commentController.updateComment
+);
+
+// Delete a comment
 router.delete('/comments/:id', verifyToken, commentController.deleteComment);
 
-// Like routes
+// --- LIKE ROUTES ---
+
+// Toggle like
 router.post('/:postId/like', verifyToken, likeController.toggleLike);
+
+// Get likes for a post
 router.get('/:postId/likes', verifyToken, likeController.getLikes);
 
 module.exports = router;

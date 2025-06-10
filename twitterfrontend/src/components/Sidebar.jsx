@@ -8,7 +8,7 @@ const Sidebar = ({ onLogout, onDeleteAccount }) => {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img
-            src="/image.png" // public folder root path
+            src="/academian-white.svg" // public folder root path
             alt="Logo"
             className="h-16 w-auto object-contain"
           />

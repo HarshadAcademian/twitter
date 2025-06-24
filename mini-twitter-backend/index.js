@@ -6,7 +6,6 @@ const path = require('path');
 
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/post');
-// const commentRoutes = require('./routes/comment');
 
 dotenv.config();
 
@@ -36,8 +35,7 @@ app.get('/', (req, res) => {
 
 // ✅ Mount routes
 app.use('/auth', authRoutes);    // Auth: /auth/signup, /auth/login, /auth/me
-app.use('/posts', postRoutes);   // Posts: /posts
-// app.use('/comments', commentRoutes);
+app.use('/posts', postRoutes);   // Posts: /posts and nested routes
 
 // ✅ Serve frontend in production (optional)
 if (process.env.NODE_ENV === 'production') {

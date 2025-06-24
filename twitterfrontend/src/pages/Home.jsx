@@ -5,6 +5,8 @@ import CommentSection from '../components/CommentSection';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
 import Like from '../components/Like';  // Import the Like component
+import { API_BASE_URL } from '../config';
+
 
 const Home = () => {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ const Home = () => {
 
     const fetchUser = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/auth/me', { headers });
+        const res = await axios.get(`${API_BASE_URL}/auth/me`, { headers });
         setUserName(res.data.user.user_name);
         setUserId(res.data.user.user_id);
       } catch {
@@ -41,12 +43,12 @@ const Home = () => {
 
   const fetchPosts = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/posts', { headers });
+      const res = await axios.get(`${API_BASE_URL}/posts`, { headers });
 
       const postsWithLikes = await Promise.all(
   res.data.posts.map(async (post) => {
     try {
-      const likeRes = await axios.get(`http://localhost:5000/posts/${post.post_id}/likes`, { headers });
+      const likeRes = await axios.get(`${API_BASE_URL}/posts/${post.post_id}/likes`, { headers });
       return {
         ...post,
         likesCount: likeRes.data.likes,
@@ -77,7 +79,7 @@ const Home = () => {
     }
 
     try {
-      await axios.post('http://localhost:5000/posts', { content }, { headers });
+      await axios.post(`${API_BASE_URL}/posts`, { content }, { headers });
       setContent('');
       setMessage('');
       fetchPosts();
@@ -88,7 +90,7 @@ const Home = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/posts/${id}`, { headers });
+      await axios.delete(`${API_BASE_URL}/posts/${id}`, { headers });
       fetchPosts();
     } catch (err) {
       alert('Delete failed.');
@@ -107,7 +109,7 @@ const Home = () => {
     }
 
     try {
-      await axios.put(`http://localhost:5000/posts/${id}`, { content: editContent }, { headers });
+      await axios.put(`${API_BASE_URL}/posts/${id}`, { content: editContent }, { headers });
       setEditingPostId(null);
       setEditContent('');
       setMessage('');
@@ -121,7 +123,7 @@ const Home = () => {
     if (!window.confirm('Are you sure you want to delete your account? This cannot be undone.')) return;
 
     try {
-      await axios.delete('http://localhost:5000/auth/me', { headers });
+      await axios.delete(`${API_BASE_URL}/auth/me`, { headers });
       localStorage.removeItem('token');
       navigate('/login');
     } catch (err) {

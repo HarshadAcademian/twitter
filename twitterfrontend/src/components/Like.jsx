@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
 const Like = ({ postId, initialLikesCount, initialLiked, token }) => {
   const [likesCount, setLikesCount] = useState(initialLikesCount || 0);
@@ -15,7 +16,7 @@ const Like = ({ postId, initialLikesCount, initialLiked, token }) => {
   const toggleLike = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5000/posts/${postId}/like`,
+        `${API_BASE_URL}/posts/${postId}/like`,
         {},
         { headers }
       );

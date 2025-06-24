@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
+import { API_BASE_URL } from '../config';
 
 const CommentSection = ({ postId, token }) => {
   const [comments, setComments] = useState([]);
@@ -9,6 +10,7 @@ const CommentSection = ({ postId, token }) => {
   const [editContent, setEditContent] = useState('');
   const [newCommentError, setNewCommentError] = useState('');
   const [editCommentError, setEditCommentError] = useState('');
+  const [actionError, setActionError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const headers = { Authorization: `Bearer ${token}` };
@@ -16,7 +18,7 @@ const CommentSection = ({ postId, token }) => {
   const fetchComments = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/posts/${postId}/comments`, { headers });
+      const res = await axios.get(`${API_BASE_URL}/posts/${postId}/comments`, { headers });
       setComments(res.data.comments);
     } catch (err) {
       console.error('Error fetching comments:', err);
@@ -29,19 +31,20 @@ const CommentSection = ({ postId, token }) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
-    if (newComment.length < 2 || newComment.length > 50) {
-      setNewCommentError('Comment must be between 2 and 50 characters.');
+    if (newComment.length < 2 || newComment.length > 200) {
+      setNewCommentError('Comment must be between 2 and 200 characters.');
       return;
     }
 
     try {
       await axios.post(
-        `http://localhost:5000/posts/${postId}/comments`,
+        `${API_BASE_URL}/posts/${postId}/comments`,
         { content: newComment },
         { headers }
       );
       setNewComment('');
       setNewCommentError('');
+      setActionError('');
       fetchComments();
     } catch (err) {
       console.error('Error adding comment:', err);
@@ -51,32 +54,42 @@ const CommentSection = ({ postId, token }) => {
   const updateComment = async (id) => {
     if (!editContent.trim()) return;
 
-    if (editContent.length < 2 || editContent.length > 50) {
-      setEditCommentError('Comment must be between 2 and 50 characters.');
+    if (editContent.length < 2 || editContent.length > 200) {
+      setEditCommentError('Comment must be between 2 and 200 characters.');
       return;
     }
 
     try {
       await axios.put(
-        `http://localhost:5000/posts/comments/${id}`,
+        `${API_BASE_URL}/posts/comments/${id}`,
         { content: editContent },
         { headers }
       );
       setEditId(null);
       setEditContent('');
       setEditCommentError('');
+      setActionError('');
       fetchComments();
     } catch (err) {
-      console.error('Error updating comment:', err);
+      if (err.response?.status === 403) {
+        setActionError('You cannot update this comment.');
+      } else {
+        console.error('Error updating comment:', err);
+      }
     }
   };
 
   const deleteComment = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/posts/comments/${id}`, { headers });
+      await axios.delete(`${API_BASE_URL}/posts/comments/${id}`, { headers });
+      setActionError('');
       fetchComments();
     } catch (err) {
-      console.error('Error deleting comment:', err);
+      if (err.response?.status === 403) {
+        setActionError('You cannot delete this comment.');
+      } else {
+        console.error('Error deleting comment:', err);
+      }
     }
   };
 
@@ -86,7 +99,6 @@ const CommentSection = ({ postId, token }) => {
 
   return (
     <div className="mt-4">
-      {/* Add Comment */}
       <form onSubmit={addComment} className="flex flex-col md:flex-row gap-2 items-start mb-2">
         <input
           type="text"
@@ -108,6 +120,9 @@ const CommentSection = ({ postId, token }) => {
       </form>
       {newCommentError && (
         <p className="text-red-500 text-sm mb-3">{newCommentError}</p>
+      )}
+      {actionError && (
+        <p className="text-red-600 text-sm mb-3">{actionError}</p>
       )}
 
       <h4 className="font-semibold text-gray-800 mb-2">Comments</h4>
@@ -149,6 +164,7 @@ const CommentSection = ({ postId, token }) => {
                       setEditId(null);
                       setEditContent('');
                       setEditCommentError('');
+                      setActionError('');
                     }}
                   >
                     <FaTimes className="inline mr-1" /> Cancel
@@ -179,6 +195,7 @@ const CommentSection = ({ postId, token }) => {
                           setEditId(comment.comment_id);
                           setEditContent(comment.comment_text);
                           setEditCommentError('');
+                          setActionError('');
                         }}
                       >
                         <FaEdit />

@@ -57,7 +57,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// Add this missing function:
+//to get current user
 exports.getCurrentUser = async (req, res) => {
   try {
     const userId = req.user.userId;

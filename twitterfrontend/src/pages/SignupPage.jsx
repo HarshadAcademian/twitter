@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FiUser, FiMail, FiMapPin, FiLock } from 'react-icons/fi';
+import { API_BASE_URL } from '../config';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -54,7 +55,7 @@ const Signup = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/auth/signup', formData);
+      const res = await axios.post(`${API_BASE_URL}/auth/signup`, formData);
       setMessage(res.data.message || 'Signup successful!');
       setTimeout(() => navigate('/login'), 1500);
     } catch (err) {

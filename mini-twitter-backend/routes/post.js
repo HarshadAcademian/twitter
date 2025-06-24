@@ -9,8 +9,8 @@ const likeController = require('../controllers/likeController');
 const sanitizeBody = require('../middleware/sanitizeBody');
 
 // --- POST ROUTES ---
+// These all start with /posts if mounted as /posts in app.js or index.js
 
-// Create a post
 router.post(
   '/',
   verifyToken,
@@ -24,12 +24,10 @@ router.post(
   postController.createPost
 );
 
-// Get all posts
 router.get('/', verifyToken, postController.getPosts);
 
-// Update a post
 router.put(
-  '/:id',
+  '/update/:id',
   verifyToken,
   [
     body('content')
@@ -41,17 +39,14 @@ router.put(
   postController.updatePost
 );
 
-// Delete a post
-router.delete('/:id', verifyToken, postController.deletePost);
+router.delete('/delete/:id', verifyToken, postController.deletePost);
 
 // --- COMMENT ROUTES ---
 
-// Get comments for a post
-router.get('/:postId/comments', verifyToken, commentController.getComments);
+router.get('/comments/:postId', verifyToken, commentController.getComments);
 
-// Add a comment
 router.post(
-  '/:postId/comments',
+  '/comments/:postId',
   verifyToken,
   [
     body('content')
@@ -63,9 +58,8 @@ router.post(
   commentController.addComment
 );
 
-// Update a comment
 router.put(
-  '/comments/:id',
+  '/comments/update/:id',
   verifyToken,
   [
     body('content')
@@ -77,15 +71,11 @@ router.put(
   commentController.updateComment
 );
 
-// Delete a comment
-router.delete('/comments/:id', verifyToken, commentController.deleteComment);
+router.delete('/comments/delete/:id', verifyToken, commentController.deleteComment);
 
 // --- LIKE ROUTES ---
 
-// Toggle like
-router.post('/:postId/like', verifyToken, likeController.toggleLike);
-
-// Get likes for a post
-router.get('/:postId/likes', verifyToken, likeController.getLikes);
+router.post('/like/:postId', verifyToken, likeController.toggleLike);
+router.get('/likes/:postId', verifyToken, likeController.getLikes);
 
 module.exports = router;
